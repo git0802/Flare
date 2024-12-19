@@ -1,13 +1,22 @@
 "use client";
 
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/lib/supabase/client";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { toast } from "@/hooks/use-toast";
 
 export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
+  );
+}
+
+function SignInContent() {
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const supabase = createClient();
 
@@ -17,7 +26,6 @@ export default function SignInPage() {
 
   async function signInWithGoogle() {
     setIsGoogleLoading(true);
-
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -33,7 +41,7 @@ export default function SignInPage() {
       }
     } catch (error) {
       toast({
-        title: "Please try again",
+        title: "Please try again.",
         description: "There was an error logging in with Google.",
         variant: "destructive",
       });
